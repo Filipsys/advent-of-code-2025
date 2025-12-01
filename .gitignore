@@ -1,0 +1,4 @@
+*.out
+*.input
+
+.DS_Store
