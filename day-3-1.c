@@ -52,6 +52,7 @@ int main() {
     char *numstr = malloc(nl + 1);
     snprintf(numstr, nl + 1, "%d%d", n1, n2);
     sum += strtol(numstr, NULL, 10);
+    free(numstr);
 
     pch = strtok_r(NULL, "\n", &saveptr1);
   }
