@@ -38,6 +38,7 @@ int main() {
 
       char *strnum = malloc(strlength + 1);
       snprintf(strnum, strlength + 1, "%d", i);
+      strnum[strlength] = '\0';
 
       char *fpart = malloc(halflen + 1);
       strncpy(fpart, strnum, halflen);
