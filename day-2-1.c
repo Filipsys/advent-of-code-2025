@@ -29,16 +29,21 @@ int main() {
     pnums = strtok_r(NULL, "-", &saveptr2);
     unsigned long long int snum = strtoull(pnums, NULL, 10);
 
-    printf("%llu to %llu\n", fnum, snum);
-
     for (int i = fnum; i <= snum; i++) {
       int strlength = snprintf(NULL, 0, "%d", i);
-      if (strlength % 2 != 0) continue;
       int halflen = strlength / 2;
 
       char *strnum = malloc(strlength + 1);
       snprintf(strnum, strlength + 1, "%d", i);
       strnum[strlength] = '\0';
+
+      if (strlength % 2 != 0) {
+        printf("Number length is odd: %d, new number: ", i);
+        for (int j = halflen; j < strlength; j++) {
+          strnum[j] = strnum[j + 1];
+        }
+        printf("%s\n", strnum);
+      }
 
       char *fpart = malloc(halflen + 1);
       strncpy(fpart, strnum, halflen);
