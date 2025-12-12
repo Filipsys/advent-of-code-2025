@@ -36,22 +36,22 @@ char *readf() {
   return str;
 }
 
-char *parse(char *str) {
+struct position *parse(char *str, int collen) {
   char *saveptr1;
   char *pstr = strtok_r(strdup(str), "\n", &saveptr1);
-
-  int collen = 0;
-  for (int i = 0; str[i] != '\0'; i++) {
-    if (str[i] == '\n') collen++;
-  }
-  printf("Columns length: %d\n", collen);
   
   int pcount = 0;
-  struct pair *pairs = malloc(collen * sizeof(struct pair));
+  struct position *posarr = malloc(collen * sizeof(struct position));
   while (pstr != NULL) {
     char *saveptr2;
-    struct pair p;
-    p.n1 = (struct position) {
+    // struct pair p;
+    // p.n1 = (struct position) {
+    //   strtol(strtok_r(pstr, ",", &saveptr2), NULL, 10),
+    //   strtol(strtok_r(NULL, ",", &saveptr2), NULL, 10),
+    //   strtol(strtok_r(NULL, ",", &saveptr2), NULL, 10),
+    // };
+
+    posarr[pcount] = (struct position) {
       strtol(strtok_r(pstr, ",", &saveptr2), NULL, 10),
       strtol(strtok_r(NULL, ",", &saveptr2), NULL, 10),
       strtol(strtok_r(NULL, ",", &saveptr2), NULL, 10),
@@ -59,43 +59,75 @@ char *parse(char *str) {
 
     // pstr = strtok_r(NULL, "\n", &saveptr1);
 
-    int cloop = 0;
-    int sdist;
-    struct position sdistp = (struct position) {0, 0, 0};
-    char *saveptr3;
-    char *strloop = strtok_r(strdup(str), "\n", &saveptr3);
-    while (strloop != NULL) {
-      if (cloop == pcount) continue;
+    // int cloop = 0;
+    // int sdist;
+    // struct position sdistp = (struct position) {0, 0, 0};
+    // char *saveptr3;
+    // char *strloop = strtok_r(strdup(str), "\n", &saveptr3);
+    // while (strloop != NULL) {
+    //   if (cloop == pcount) continue;
 
       // calcdist(p.n1, );
 
-      cloop++;
-      strloop = strtok_r(NULL, "\n", &saveptr3);
-    }
+    //   cloop++;
+    //   strloop = strtok_r(NULL, "\n", &saveptr3);
+    // }
+    //
+    // char *saveptr4;
+    // p.n2 = (struct position) {
+    //   strtol(strtok_r(pstr, ",", &saveptr4), NULL, 10),
+    //   strtol(strtok_r(NULL, ",", &saveptr4), NULL, 10),
+    //   strtol(strtok_r(NULL, ",", &saveptr4), NULL, 10),
+    // };
 
-    char *saveptr4;
-    p.n2 = (struct position) {
-      strtol(strtok_r(pstr, ",", &saveptr4), NULL, 10),
-      strtol(strtok_r(NULL, ",", &saveptr4), NULL, 10),
-      strtol(strtok_r(NULL, ",", &saveptr4), NULL, 10),
-    };
-
-    pairs[pcount] = p;
+    // pairs[pcount] = p;
     pcount++;
 
     pstr = strtok_r(NULL, "\n", &saveptr1);
   }
 
   for (int i = 0; i < collen / 2; i++) {
-    printf("Pair: %d,%d,%d %d,%d,%d\n", pairs[i].n1.x, pairs[i].n1.y, pairs[i].n1.z, pairs[i].n2.x, pairs[i].n2.y, pairs[i].n2.z);
+    // printf("Pair: %d,%d,%d %d,%d,%d\n", pairs[i].n1.x, pairs[i].n1.y, pairs[i].n1.z, pairs[i].n2.x, pairs[i].n2.y, pairs[i].n2.z);
+    printf("Position: %d,%d,%d\n", posarr[i].x, posarr[i].y, posarr[i].z);
   }
   
-  return "123";
+  return posarr;
 }
 
 int main() {
   char *input = readf();
-  parse(input);
+
+  int collen = 0;
+  for (int i = 0; input[i] != '\0'; i++) {
+    if (input[i] == '\n') collen++;
+  }
+
+  struct position *posarr = parse(input, collen);
+  struct pair *pairs = malloc(collen * sizeof(struct pair));
+
+  for (int i = 0; i < collen; i++) {
+    int dist = 2147483647;
+    int min;
+
+    for (int j = i + 1; j < collen; j++) {
+      if (i == j) continue;
+
+      int newdist = calcdist(posarr[i], posarr[j]);
+      if (newdist < dist) {
+        dist = newdist;
+        min = j;
+      }
+    }
+
+    struct pair p;
+    pairs[i].n1 = (struct position) {posarr[i].x, posarr[i].y, posarr[i].z};
+    pairs[i].n2 = (struct position) {posarr[min].x, posarr[min].y, posarr[min].z};
+  }
+
+  for (int i = 0; i < collen; i++) {
+    printf("Closest pair: %d,%d,%d to %d,%d,%d\n", pairs[i].n1.x, pairs[i].n1.y, pairs[i].n1.z, pairs[i].n2.x, pairs[i].n2.y, pairs[i].n2.z);
+  }
   
+  free(posarr);
   return 0;
 }
