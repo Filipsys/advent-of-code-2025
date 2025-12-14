@@ -20,6 +20,11 @@ struct pair {
   int dist;
 };
 
+struct connection {
+  struct pair *p1;
+  struct pair *p2;
+};
+
 int calcdist(struct position p1, struct position p2) {
   return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2) + pow(p2.z - p1.z, 2));
 }
@@ -110,9 +115,8 @@ int main() {
     int min;
 
     for (int j = i + 1; j < collen; j++) {
-      if (i == j) continue;
-
       int newdist = calcdist(posarr[i], posarr[j]);
+
       if (newdist < dist) {
         dist = newdist;
         min = j;
@@ -127,7 +131,31 @@ int main() {
   for (int i = 0; i < collen; i++) {
     printf("Closest pair: %d,%d,%d to %d,%d,%d\n", pairs[i].n1.x, pairs[i].n1.y, pairs[i].n1.z, pairs[i].n2.x, pairs[i].n2.y, pairs[i].n2.z);
   }
-  
+
+  struct connection *conn = malloc(collen);
+  int cc = 0;
+  for (int i = 0; i < collen; i++) {
+    for (int j = i + 1; j < collen; j++) {
+      if (pairs[i].n1.x == pairs[j].n1.x &&
+          pairs[i].n1.y == pairs[j].n1.y &&
+          pairs[i].n1.z == pairs[j].n1.z) {
+        conn[cc] = (struct connection) {&pairs[i], &pairs[j]};
+        continue;
+      }
+
+      if (pairs[i].n2.x == pairs[j].n2.x &&
+          pairs[i].n2.y == pairs[j].n2.y &&
+          pairs[i].n2.z == pairs[j].n2.z) {
+        conn[cc] = (struct connection) {&pairs[i], &pairs[j]};
+        continue;
+      }
+    }
+  }
+
+  for (int i = 0; i < collen; i++) {
+    printf("Pointer connection: %p - %p\n", conn[i].p1, conn[i].p2);
+  }
+
   free(posarr);
   return 0;
 }
